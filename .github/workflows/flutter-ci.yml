@@ -88,12 +88,30 @@ jobs:
           if [ -f /tmp/demo-server.pid ]; then kill "$(cat /tmp/demo-server.pid)" || true; fi
           cat /tmp/demo-server.log || true
 
+  scaffold-state:
+    name: Detect platform scaffolds
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      platforms: ${{ steps.check.outputs.platforms }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f flutter_app/android/build.gradle ] && [ -f flutter_app/windows/runner/main.cpp ]; then
+            echo "platforms=true" >> "$GITHUB_OUTPUT"
+            echo "Platform scaffolds present."
+          else
+            echo "platforms=false" >> "$GITHUB_OUTPUT"
+            echo "Scaffolds missing - run the flutter-scaffold workflow."
+          fi
+
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: analyze-test
-    if: ${{ hashFiles('flutter_app/android/build.gradle') != '' }}
+    needs: [analyze-test, scaffold-state]
+    if: ${{ needs.scaffold-state.outputs.platforms == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -113,8 +131,8 @@ jobs:
     name: Build Windows
     runs-on: windows-latest
     timeout-minutes: 60
-    needs: analyze-test
-    if: ${{ hashFiles('flutter_app/windows/runner/main.cpp') != '' }}
+    needs: [analyze-test, scaffold-state]
+    if: ${{ needs.scaffold-state.outputs.platforms == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
