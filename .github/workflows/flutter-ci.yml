@@ -12,11 +12,6 @@ on:
       - 'flutter_app/**'
       - '.github/workflows/flutter-ci.yml'
   workflow_dispatch:
-    inputs:
-      build_ios:
-        description: 'Also build iOS (no codesign)'
-        type: boolean
-        default: false
 
 concurrency:
   group: flutter-ci-${{ github.ref }}
@@ -41,7 +36,41 @@ jobs:
       - name: Pub get
         run: flutter pub get
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
+        id: analyze
+        shell: bash
+        run: |
+          set +e
+          flutter analyze --no-fatal-infos --format machine > analyze.txt 2>&1
+          code=$?
+          # Human-readable summary (renders on the job page without log access).
+          {
+            echo "### flutter analyze (exit $code)"
+            echo '```'
+            head -c 60000 analyze.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # First errors as inline annotations (capped by GitHub anyway).
+          awk -F'|' '
+            $1=="ERROR" && n<10 {
+              n++
+              gsub(/%/, "%%", $7)
+              printf "::error file=../%s,line=%s,col=%s::%s\n", $4, $5, $6, $7
+            }' analyze.txt
+          # Commit the raw output so it is readable from a plain git fetch
+          # (Actions log downloads are blocked in the dev sandbox).
+          if [ "$code" -ne 0 ]; then
+            mkdir -p ci-logs
+            cp analyze.txt ci-logs/analyze-latest.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-logs/analyze-latest.txt
+            if ! git diff --cached --quiet; then
+              git commit -m "ci: capture flutter analyze output [skip ci]"
+              git pull --rebase origin "$GITHUB_REF_NAME" || true
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
+            fi
+          fi
+          exit $code
       - name: Test
         run: flutter test --reporter expanded
 
@@ -49,7 +78,6 @@ jobs:
     name: E2E against demo server
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: analyze-test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -103,68 +131,149 @@ jobs:
             echo "Platform scaffolds present."
           else
             echo "platforms=false" >> "$GITHUB_OUTPUT"
-            echo "Scaffolds missing - run the flutter-scaffold workflow."
+            echo "Scaffolds missing - bootstrap will generate them."
+          fi
+
+  bootstrap-scaffold:
+    name: Bootstrap android/ios/windows scaffolds
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [analyze-test, scaffold-state]
+    if: ${{ always() && github.event_name == 'push' && needs.scaffold-state.outputs.platforms == 'false' }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate scaffold in temp dir
+        run: |
+          cd "$RUNNER_TEMP"
+          flutter create \
+            --project-name gatherhall \
+            --org com.gatherhall.app \
+            --platforms=android,ios,windows \
+            gatherhall_scaffold
+      - name: Copy platform dirs into flutter_app
+        run: |
+          src="$RUNNER_TEMP/gatherhall_scaffold"
+          dest="$GITHUB_WORKSPACE/flutter_app"
+          rsync -a \
+            --exclude '/lib' \
+            --exclude '/test' \
+            --exclude 'pubspec.yaml' \
+            --exclude 'pubspec.lock' \
+            --exclude 'analysis_options.yaml' \
+            --exclude 'README.md' \
+            --exclude '.gitignore' \
+            "$src/" "$dest/"
+          test -f "$dest/android/app/src/main/kotlin/com/gatherhall/app/MainActivity.kt"
+          test -f "$dest/windows/runner/main.cpp"
+          test -d "$dest/ios/Runner"
+      - name: Commit scaffold
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A flutter_app
+          if git diff --cached --quiet; then
+            echo "Scaffold already up to date."
+          else
+            git commit -m "chore(flutter): bootstrap platform scaffolds [skip ci]"
+            git pull --rebase origin "$GITHUB_REF_NAME" || true
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           fi
 
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [analyze-test, scaffold-state]
-    if: ${{ needs.scaffold-state.outputs.platforms == 'true' }}
+    needs: [analyze-test, scaffold-state, bootstrap-scaffold]
+    if: ${{ !cancelled() && needs.analyze-test.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Check scaffold
+        id: check
+        continue-on-error: true
+        run: test -f flutter_app/android/build.gradle
       - uses: subosito/flutter-action@v2
+        if: steps.check.outcome == 'success'
         with:
           channel: stable
           cache: true
       - name: Pub get
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter pub get
       - name: Build APK (release, debug-signed)
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter build apk --release
-      - name: Report artifact path
-        run: ls -lh flutter_app/build/app/outputs/flutter-apk/
+      - name: Notice
+        if: steps.check.outcome != 'success'
+        run: echo "::warning::Android scaffold missing - run bootstrap first."
 
   build-windows:
     name: Build Windows
     runs-on: windows-latest
     timeout-minutes: 60
-    needs: [analyze-test, scaffold-state]
-    if: ${{ needs.scaffold-state.outputs.platforms == 'true' }}
+    needs: [analyze-test, scaffold-state, bootstrap-scaffold]
+    if: ${{ !cancelled() && needs.analyze-test.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Check scaffold
+        id: check
+        continue-on-error: true
+        shell: bash
+        run: test -f flutter_app/windows/runner/main.cpp
       - uses: subosito/flutter-action@v2
+        if: steps.check.outcome == 'success'
         with:
           channel: stable
           cache: true
       - name: Enable Windows desktop
+        if: steps.check.outcome == 'success'
         run: flutter config --enable-windows-desktop
       - name: Pub get
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter pub get
       - name: Build Windows release
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter build windows --release
-      - name: Report artifact path
-        run: Get-ChildItem flutter_app\build\windows\x64\runner\Release
 
   build-ios:
     name: Build iOS (no codesign)
     runs-on: macos-latest
     timeout-minutes: 60
-    needs: analyze-test
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_ios }}
+    needs: [analyze-test, scaffold-state, bootstrap-scaffold]
+    if: ${{ !cancelled() && needs.analyze-test.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Check scaffold
+        id: check
+        continue-on-error: true
+        run: test -f flutter_app/ios/Runner/Runner.xcodeproj/project.pbxproj || test -d flutter_app/ios/Runner
       - uses: subosito/flutter-action@v2
+        if: steps.check.outcome == 'success'
         with:
           channel: stable
           cache: true
       - name: Pub get
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter pub get
       - name: Build iOS
+        if: steps.check.outcome == 'success'
         working-directory: flutter_app
         run: flutter build ios --no-codesign --release

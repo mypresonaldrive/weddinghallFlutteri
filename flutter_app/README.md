@@ -56,9 +56,10 @@ flutter run -d windows   # or chrome / <android-device-id> / ios
 ```
 
 Desktop platforms need their generated scaffolds (`android/`, `ios/`,
-`windows/`); on this branch they are produced by the dispatchable
-`.github/workflows/flutter-scaffold.yml` workflow, which runs `flutter create`
-in CI and commits the result back (sandbox artifact downloads are blocked).
+`windows/`); on this branch the first CI run's `bootstrap-scaffold` job runs
+`flutter create` in CI and commits the result back automatically (sandbox
+artifact downloads are blocked, and `workflow_dispatch` only works from the
+default branch).
 
 ## Tests & CI
 
