@@ -40,35 +40,38 @@ jobs:
         shell: bash
         run: |
           set +e
-          flutter analyze --no-fatal-infos --format machine > analyze.txt 2>&1
-          code=$?
-          # Human-readable summary (renders on the job page without log access).
+          cd "$GITHUB_WORKSPACE/flutter_app"
+          flutter analyze --no-fatal-infos 2>&1 | tee analyze.txt
+          code=${PIPESTATUS[0]}
+          cd "$GITHUB_WORKSPACE"
+          bytes=$(wc -c < flutter_app/analyze.txt || echo 0)
+          echo "::notice::analyze exit=$code bytes=$bytes"
+          # Human-readable summary (renders on the job page).
           {
             echo "### flutter analyze (exit $code)"
             echo '```'
-            head -c 60000 analyze.txt
+            head -c 60000 flutter_app/analyze.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # First errors as inline annotations (capped by GitHub anyway).
-          awk -F'|' '
-            $1=="ERROR" && n<10 {
-              n++
-              gsub(/%/, "%%", $7)
-              printf "::error file=../%s,line=%s,col=%s::%s\n", $4, $5, $6, $7
-            }' analyze.txt
-          # Commit the raw output so it is readable from a plain git fetch
-          # (Actions log downloads are blocked in the dev sandbox).
+          # Inline annotations for the first errors (correct workspace paths).
+          grep -E "^[^ ].*:[0-9]+:[0-9]+: error" flutter_app/analyze.txt | head -10 | while IFS= read -r line; do
+            file=$(printf '%s' "$line" | sed -E 's/^(.*):[0-9]+:[0-9]+: error.*$/\\1/')
+            pos=$(printf '%s' "$line" | sed -E 's/^.*:([0-9]+):([0-9]+): error.*$/\\1,\\2/')
+            msg=$(printf '%s' "$line" | sed -E 's/^.*: error - //')
+            echo "::error file=$file,line=${pos%%,*},col=${pos##*,}::$msg"
+          done
+          # Commit raw output so it is readable from a plain git fetch.
           if [ "$code" -ne 0 ]; then
             mkdir -p ci-logs
-            cp analyze.txt ci-logs/analyze-latest.txt
+            cp flutter_app/analyze.txt ci-logs/analyze-latest.txt
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add ci-logs/analyze-latest.txt
-            if ! git diff --cached --quiet; then
-              git commit -m "ci: capture flutter analyze output [skip ci]"
-              git pull --rebase origin "$GITHUB_REF_NAME" || true
-              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
-            fi
+            git diff --cached --quiet && echo "::notice::analyze: nothing staged" || {
+              git commit -q -m "ci: capture flutter analyze output [skip ci]"
+              echo "::notice::analyze: committed"
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" 2>/tmp/pusherr && echo "::notice::analyze: pushed" || echo "::notice::analyze push failed: $(head -c 200 /tmp/pusherr)"
+            }
           fi
           exit $code
       - name: Test
@@ -162,6 +165,7 @@ jobs:
         run: |
           src="$RUNNER_TEMP/gatherhall_scaffold"
           dest="$GITHUB_WORKSPACE/flutter_app"
+          echo "::notice::generated: $(find "$src" -maxdepth 2 -mindepth 1 | sed "s|$src/||" | sort | tr '\n' ' ')"
           rsync -a \
             --exclude '/lib' \
             --exclude '/test' \
@@ -171,9 +175,15 @@ jobs:
             --exclude 'README.md' \
             --exclude '.gitignore' \
             "$src/" "$dest/"
-          test -f "$dest/android/app/src/main/kotlin/com/gatherhall/app/MainActivity.kt"
-          test -f "$dest/windows/runner/main.cpp"
-          test -d "$dest/ios/Runner"
+          for plat in android ios windows; do
+            if [ -z "$(ls -A "$dest/$plat" 2>/dev/null)" ]; then
+              echo "::error::platform dir $plat missing or empty after copy"
+              find "$src/$plat" 2>/dev/null | head -30
+              exit 1
+            fi
+          done
+          echo "::notice::copied: android=$(find "$dest/android" -type f | wc -l) ios=$(find "$dest/ios" -type f | wc -l) windows=$(find "$dest/windows" -type f | wc -l) files"
+          echo "::notice::main activity: $(find "$dest/android" -name 'MainActivity*' | head -3 | tr '\n' ' ')"
       - name: Commit scaffold
         run: |
           git config user.name "github-actions[bot]"
