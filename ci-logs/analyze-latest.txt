@@ -1,0 +1,114 @@
+Analyzing flutter_app...                                        
+
+  error • The operator '<' isn't defined for the type 'String'. Try defining the operator '<' • lib/src/core/duration.dart:105:49 • undefined_operator
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/core/duration.dart:118:69 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/core/duration.dart:118:86 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/core/duration.dart:119:39 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/core/duration.dart:143:20 • unnecessary_non_null_assertion
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/auth.dart:73:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/auth.dart:104:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/auth.dart:421:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/auth.dart:448:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/auth.dart:460:10 • non_type_in_catch_clause
+warning • The value of the local variable 'organization' isn't used. Try removing the variable or using it • lib/src/screens/billing.dart:109:11 • unused_local_variable
+  error • The name 'ApiExceptionLike' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/booking_wizard.dart:228:12 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/booking_wizard.dart:308:10 • non_type_in_catch_clause
+  error • The operator '<' isn't defined for the type 'String'. Try defining the operator '<' • lib/src/screens/booking_wizard.dart:332:22 • undefined_operator
+  error • The name 'ApiExceptionLike' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/booking_wizard.dart:342:12 • non_type_in_catch_clause
+  error • The property 'available' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') • lib/src/screens/booking_wizard.dart:349:23 • unchecked_use_of_nullable_value
+  error • The property 'reason' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') • lib/src/screens/booking_wizard.dart:349:47 • unchecked_use_of_nullable_value
+  error • The property 'reason' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') • lib/src/screens/booking_wizard.dart:350:30 • unchecked_use_of_nullable_value
+warning • The value of the local variable 'saved' isn't used. Try removing the variable or using it • lib/src/screens/booking_wizard.dart:496:18 • unused_local_variable
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/booking_wizard.dart:504:10 • non_type_in_catch_clause
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:736:60 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:747:21 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:752:58 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:766:21 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:791:58 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:800:21 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:835:38 • argument_type_not_assignable
+  error • Undefined name 'durationOptions'. Try correcting the name to one that is defined, or defining the name • lib/src/screens/booking_wizard.dart:840:40 • undefined_identifier
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:846:19 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:991:53 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:999:43 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:1136:46 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:1151:27 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/booking_wizard.dart:1205:46 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/booking_wizard.dart:1217:43 • invocation_of_non_function_expression
+  error • The operator '<' isn't defined for the type 'String'. Try defining the operator '<' • lib/src/screens/bookings.dart:37:42 • undefined_operator
+  error • The operator '>' isn't defined for the type 'String'. Try defining the operator '>' • lib/src/screens/bookings.dart:38:40 • undefined_operator
+  error • The operator '>=' isn't defined for the type 'String'. Try defining the operator '>=' • lib/src/screens/bookings.dart:62:37 • undefined_operator
+  error • The operator '>=' isn't defined for the type 'String'. Try defining the operator '>=' • lib/src/screens/bookings.dart:63:37 • undefined_operator
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/bookings.dart:367:10 • non_type_in_catch_clause
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:640:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:643:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:646:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:649:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:655:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:658:12 • unnecessary_cast
+warning • Unnecessary cast. Try removing the cast • lib/src/screens/bookings.dart:672:12 • unnecessary_cast
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/bookings.dart:845:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/catalog.dart:202:10 • non_type_in_catch_clause
+  error • The name 'ApiExceptionLike' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/catalog.dart:360:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/catalog.dart:393:10 • non_type_in_catch_clause
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:432:51 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:440:41 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:446:51 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:454:41 • invocation_of_non_function_expression
+  error • The argument type 'AlertDialog Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:864:50 • argument_type_not_assignable
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:871:42 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:879:39 • invocation_of_non_function_expression
+  error • The name 'ApiExceptionLike' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/catalog.dart:1004:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/catalog.dart:1025:10 • non_type_in_catch_clause
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:1073:51 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:1081:41 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:1091:51 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:1100:27 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/catalog.dart:1106:51 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/catalog.dart:1114:41 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/clients.dart:180:10 • non_type_in_catch_clause
+  error • The argument type 'Padding Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/clients.dart:197:39 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/clients.dart:290:31 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/clients.dart:309:36 • non_type_in_catch_clause
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/clients.dart:310:33 • invocation_of_non_function_expression
+  error • The operator '>=' isn't defined for the type 'String'. Try defining the operator '>=' • lib/src/screens/dashboard.dart:26:38 • undefined_operator
+warning • The value of the local variable 'totalPaid' isn't used. Try removing the variable or using it • lib/src/screens/dashboard.dart:34:11 • unused_local_variable
+  error • The getter 'event_upcoming_outlined' isn't defined for the type 'Icons'. Try importing the library that defines 'event_upcoming_outlined', correcting the name to the name of an existing getter, or defining a getter or field named 'event_upcoming_outlined' • lib/src/screens/dashboard.dart:69:31 • undefined_getter
+  error • The method 'occupiesDate' isn't defined for the type '_HallOccupancyCard'. Try correcting the name to the name of an existing method, or defining a method named 'occupiesDate' • lib/src/screens/dashboard.dart:268:25 • undefined_method
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/halls.dart:202:10 • non_type_in_catch_clause
+  error • The argument type 'Padding Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/halls.dart:233:39 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/halls.dart:383:31 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/halls.dart:410:36 • non_type_in_catch_clause
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/halls.dart:411:33 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/payments.dart:217:10 • non_type_in_catch_clause
+  error • The argument type 'Padding Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/payments.dart:251:39 • argument_type_not_assignable
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/payments.dart:266:42 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/payments.dart:292:23 • invocation_of_non_function_expression
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/payments.dart:293:23 • invocation_of_non_function_expression
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/payments.dart:379:31 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/payments.dart:395:36 • non_type_in_catch_clause
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/payments.dart:396:33 • invocation_of_non_function_expression
+  error • The argument type 'DropdownButtonFormField<String> Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/platform_console.dart:236:50 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/platform_console.dart:247:47 • invocation_of_non_function_expression
+  error • The argument type 'AlertDialog Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/platform_console.dart:747:50 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/platform_console.dart:831:39 • invocation_of_non_function_expression
+  error • The argument type 'AlertDialog Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/platform_console.dart:1377:50 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/platform_console.dart:1388:37 • invocation_of_non_function_expression
+  error • Undefined name 'bookingStatuses'. Try correcting the name to one that is defined, or defining the name • lib/src/screens/reports.dart:51:23 • undefined_identifier
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/settings.dart:52:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/settings.dart:84:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/settings.dart:328:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/settings.dart:340:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/settings.dart:355:10 • non_type_in_catch_clause
+  error • The getter 'dividerColor' isn't defined for the type 'ColorScheme'. Try importing the library that defines 'dividerColor', correcting the name to the name of an existing getter, or defining a getter or field named 'dividerColor' • lib/src/screens/shell.dart:215:53 • undefined_getter
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/staff.dart:172:10 • non_type_in_catch_clause
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/staff.dart:189:10 • non_type_in_catch_clause
+  error • The argument type 'Padding Function(BuildContext)' can't be assigned to the parameter type 'StatefulWidgetBuilder'.  • lib/src/screens/staff.dart:206:39 • argument_type_not_assignable
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/staff.dart:301:31 • invocation_of_non_function_expression
+  error • The name 'ApiException' isn't a type and can't be used in an on-catch clause. Try correcting the name to match an existing class • lib/src/screens/staff.dart:320:36 • non_type_in_catch_clause
+  error • The expression doesn't evaluate to a function, so it can't be invoked • lib/src/screens/staff.dart:321:33 • invocation_of_non_function_expression
+warning • The value of the local variable 'lastPath' isn't used. Try removing the variable or using it • test/api_test.dart:14:11 • unused_local_variable
+  error • The getter 'names' isn't defined for the type 'HttpHeaders'. Try importing the library that defines 'names', correcting the name to the name of an existing getter, or defining a getter or field named 'names' • test/api_test.dart:27:44 • undefined_getter
+  error • The method 'get' isn't defined for the type 'ApiClient'. Try correcting the name to the name of an existing method, or defining a method named 'get' • test/api_test.dart:109:14 • undefined_method
+
+110 issues found. (ran in 7.8s)
