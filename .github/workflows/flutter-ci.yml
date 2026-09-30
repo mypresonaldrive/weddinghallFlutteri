@@ -77,7 +77,32 @@ jobs:
           fi
           exit $code
       - name: Test
-        run: flutter test --reporter expanded
+        shell: bash
+        run: |
+          set +e
+          cd "$GITHUB_WORKSPACE/flutter_app"
+          flutter test --reporter expanded 2>&1 | tee test-out.txt
+          code=${PIPESTATUS[0]}
+          cd "$GITHUB_WORKSPACE"
+          {
+            echo "### flutter test (exit $code)"
+            echo '```'
+            head -c 60000 flutter_app/test-out.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice::test exit=$code lines=$(wc -l < flutter_app/test-out.txt)"
+          if [ "$code" -ne 0 ]; then
+            mkdir -p ci-logs
+            cp flutter_app/test-out.txt ci-logs/test-latest.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-logs/test-latest.txt
+            git diff --cached --quiet || {
+              git commit -q -m "ci: capture flutter test output [skip ci]"
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
+            }
+          fi
+          exit $code
 
   e2e-demo:
     name: E2E against demo server
@@ -224,8 +249,25 @@ jobs:
         run: flutter pub get
       - name: Build APK (release, debug-signed)
         if: steps.check.outcome == 'success'
-        working-directory: flutter_app
-        run: flutter build apk --release
+        shell: bash
+        run: |
+          set +e
+          cd "$GITHUB_WORKSPACE/flutter_app"
+          flutter build apk --release 2>&1 | tee build-out.txt
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            cd "$GITHUB_WORKSPACE"
+            mkdir -p ci-logs
+            cp flutter_app/build-out.txt ci-logs/build-android-latest.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-logs/build-android-latest.txt
+            git diff --cached --quiet || {
+              git commit -q -m "ci: capture android build output [skip ci]"
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
+            }
+          fi
+          exit $code
       - name: Notice
         if: steps.check.outcome != 'success'
         run: echo "::warning::Android scaffold missing - run bootstrap first."
@@ -259,8 +301,25 @@ jobs:
         run: flutter pub get
       - name: Build Windows release
         if: steps.check.outcome == 'success'
-        working-directory: flutter_app
-        run: flutter build windows --release
+        shell: bash
+        run: |
+          set +e
+          cd "$GITHUB_WORKSPACE/flutter_app"
+          flutter build windows --release 2>&1 | tee build-out.txt
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            cd "$GITHUB_WORKSPACE"
+            mkdir -p ci-logs
+            cp flutter_app/build-out.txt ci-logs/build-windows-latest.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-logs/build-windows-latest.txt
+            git diff --cached --quiet || {
+              git commit -q -m "ci: capture windows build output [skip ci]"
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
+            }
+          fi
+          exit $code
 
   build-ios:
     name: Build iOS (no codesign)
@@ -287,5 +346,22 @@ jobs:
         run: flutter pub get
       - name: Build iOS
         if: steps.check.outcome == 'success'
-        working-directory: flutter_app
-        run: flutter build ios --no-codesign --release
+        shell: bash
+        run: |
+          set +e
+          cd "$GITHUB_WORKSPACE/flutter_app"
+          flutter build ios --no-codesign --release 2>&1 | tee build-out.txt
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            cd "$GITHUB_WORKSPACE"
+            mkdir -p ci-logs
+            cp flutter_app/build-out.txt ci-logs/build-ios-latest.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-logs/build-ios-latest.txt
+            git diff --cached --quiet || {
+              git commit -q -m "ci: capture ios build output [skip ci]"
+              git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" || true
+            }
+          fi
+          exit $code
