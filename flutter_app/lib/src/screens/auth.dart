@@ -5,6 +5,7 @@ import '../core/api.dart';
 import '../core/session.dart';
 import '../core/store.dart';
 import '../widgets/common.dart';
+import 'explore.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.session, required this.workspace});
@@ -318,6 +319,17 @@ class _AuthScreenState extends State<AuthScreen> {
                     'Server: ${widget.session.baseUrl}',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              HallExplorerScreen(session: widget.session),
+                        ),
+                      );
+                    },
+                    child: const Text('Explore wedding halls near you →'),
                   ),
                 ],
               ),

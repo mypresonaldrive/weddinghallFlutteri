@@ -15,11 +15,11 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT m
 const dataDir = path.resolve(process.env.DATA_DIR || 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'gatherhall.sqlite'));
-db.exec(`PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS tenants(id TEXT PRIMARY KEY,name TEXT); CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,tenant TEXT,name TEXT,email TEXT UNIQUE,password TEXT,role TEXT); CREATE TABLE IF NOT EXISTS account_links(record_id TEXT PRIMARY KEY,user_id TEXT); CREATE TABLE IF NOT EXISTS client_access(user_id TEXT PRIMARY KEY,client_id TEXT); CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS records(id TEXT PRIMARY KEY,tenant TEXT,kind TEXT,body TEXT); CREATE TABLE IF NOT EXISTS catalog_initialized(tenant TEXT PRIMARY KEY);`);
+db.exec(`PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS tenants(id TEXT PRIMARY KEY,name TEXT); CREATE TABLE IF NOT EXISTS users(id TEXT PRIMARY KEY,tenant TEXT,name TEXT,email TEXT UNIQUE,password TEXT,role TEXT); CREATE TABLE IF NOT EXISTS account_links(record_id TEXT PRIMARY KEY,user_id TEXT); CREATE TABLE IF NOT EXISTS client_access(user_id TEXT PRIMARY KEY,client_id TEXT); CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id TEXT,expires INTEGER); CREATE TABLE IF NOT EXISTS records(id TEXT PRIMARY KEY,tenant TEXT,kind TEXT,body TEXT); CREATE TABLE IF NOT EXISTS catalog_initialized(tenant TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS public_enquiries(id TEXT PRIMARY KEY,name TEXT,email TEXT,organization TEXT,message TEXT,locale TEXT,created_at INTEGER);`);
 const put=(id,tenant,kind,body)=>db.prepare('INSERT INTO records VALUES(?,?,?,?)').run(id,tenant,kind,JSON.stringify(body));
 if(!db.prepare('SELECT id FROM tenants LIMIT 1').get()){
  for(const [tid,name] of [['t1','The Grand Estate'],['t2','Willow & Co. Venues']]){
- db.prepare('INSERT INTO tenants VALUES(?,?)').run(tid,name);
+ db.prepare('INSERT INTO tenants(id,name) VALUES(?,?)').run(tid,name);
  for(const [role,person,email] of [['owner','Arjun Mehta',tid==='t1'?'owner@gatherhall.demo':'willow@gatherhall.demo'],['staff','Ananya Sharma',tid==='t1'?'staff@gatherhall.demo':'team@willow.demo'],['client','Priya Sharma',tid==='t1'?'client@gatherhall.demo':'client@willow.demo']]) db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?)').run(tid+role,tid,person,email,bcrypt.hashSync('Welcome123!',10),role);
  const halls=[['The Grand Ballroom','Indoor','500','185000','venue.jpg'],['The Garden Pavilion','Outdoor','300','125000','garden.jpg'],['The Royal Terrace','Rooftop','200','95000','terrace.jpg']];
  halls.forEach((h,i)=>put(tid+'h'+i,tid,'halls',{name:h[0],type:h[1],capacity:+h[2],price:+h[3],image:h[4],status:'Available',description:['Timeless elegance, crystal chandeliers, and room for your biggest moments.','An open-air celebration surrounded by lush gardens and warm lights.','An intimate rooftop setting with beautiful sunset views.'][i]}));
@@ -34,6 +34,8 @@ if(!db.prepare('SELECT id FROM tenants LIMIT 1').get()){
  }
  }
 }
+try{db.exec("ALTER TABLE tenants ADD COLUMN city TEXT DEFAULT ''");}catch(_){}
+for(const [tid,city] of [['t1','Patna'],['t2','Mumbai']])db.prepare("UPDATE tenants SET city=? WHERE id=? AND (city IS NULL OR city='')").run(city,tid);
 for(const tid of ['t1','t2']){db.prepare('INSERT OR IGNORE INTO client_access VALUES(?,?)').run(tid+'client',tid+'c0');db.prepare('INSERT OR IGNORE INTO account_links VALUES(?,?)').run(tid+'c0',tid+'client');db.prepare('INSERT OR IGNORE INTO account_links VALUES(?,?)').run(tid+'s0',tid+'staff');}
 function seedCatalog(tenant) {
  if (db.prepare('SELECT tenant FROM catalog_initialized WHERE tenant=?').get(tenant)) return;
@@ -82,8 +84,34 @@ app.get('/healthz', (_req, res) => {
 app.use(express.json());app.use(cookieParser());
 const publicUser=u=>({id:u.id,name:u.name,email:u.email,role:u.role,tenantId:u.tenant,tenant:db.prepare('SELECT name FROM tenants WHERE id=?').get(u.tenant).name});
 app.post('/api/auth/login',(req,res)=>{const u=db.prepare('SELECT * FROM users WHERE email=?').get(String(req.body.email||'').toLowerCase());if(!u||!bcrypt.compareSync(req.body.password||'',u.password))return res.status(401).json({error:'Email or password is incorrect.'});const linked=db.prepare('SELECT body FROM records JOIN account_links ON records.id=account_links.record_id WHERE account_links.user_id=?').get(u.id);if(linked&&JSON.parse(linked.body).status==='Inactive')return res.status(403).json({error:'This account is inactive. Contact your workspace owner.'});const token=randomBytes(32).toString('hex');db.prepare('INSERT INTO sessions VALUES(?,?,?)').run(token,u.id,Date.now()+604800000);res.cookie('session',token,{httpOnly:true,sameSite:'lax',maxAge:604800000});res.json(publicUser(u));});
-app.post('/api/auth/register',(req,res)=>{const {name,email,password,organization}=req.body;if(!name||!organization||!email?.includes('@')||password?.length<8)return res.status(400).json({error:'Complete all fields and use a password with at least 8 characters.'});if(db.prepare('SELECT id FROM users WHERE email=?').get(email.toLowerCase()))return res.status(409).json({error:'This email is already registered.'});const tid=randomBytes(8).toString('hex'),id=randomBytes(8).toString('hex');db.prepare('INSERT INTO tenants VALUES(?,?)').run(tid,organization);db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?)').run(id,tid,name,email.toLowerCase(),bcrypt.hashSync(password,10),'owner');seedCatalog(tid);res.json({success:true});});
+app.post('/api/auth/register',(req,res)=>{const {name,email,password,organization}=req.body;if(!name||!organization||!email?.includes('@')||password?.length<8)return res.status(400).json({error:'Complete all fields and use a password with at least 8 characters.'});if(db.prepare('SELECT id FROM users WHERE email=?').get(email.toLowerCase()))return res.status(409).json({error:'This email is already registered.'});const tid=randomBytes(8).toString('hex'),id=randomBytes(8).toString('hex');db.prepare('INSERT INTO tenants(id,name) VALUES(?,?)').run(tid,organization);db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?)').run(id,tid,name,email.toLowerCase(),bcrypt.hashSync(password,10),'owner');seedCatalog(tid);res.json({success:true});});
 app.post('/api/auth/logout',(req,res)=>{db.prepare('DELETE FROM sessions WHERE token=?').run(req.cookies.session||'');res.clearCookie('session').json({success:true});});
+// ---- Public discovery: no session required (marketing + app explore flow) ----
+app.get('/api/public/halls',(_req,res)=>{
+ const tenants=new Map(db.prepare('SELECT id,name,city FROM tenants').all().map(t=>[t.id,t]));
+ const halls=[];
+ for(const r of db.prepare("SELECT id,tenant,body FROM records WHERE kind='halls'").all()){
+  const t=tenants.get(r.tenant);if(!t)continue;const b=JSON.parse(r.body);if(b.status!=='Available')continue;
+  halls.push({id:r.id,name:b.name||'',type:b.type||'',capacity:b.capacity??0,price:b.price??0,morningPrice:b.morningPrice??null,afternoonPrice:b.afternoonPrice??null,eveningPrice:b.eveningPrice??null,image:b.image||'',description:b.description||'',city:t.city||'',venue:t.name||''});
+ }
+ res.json({halls,cities:[...new Set(halls.map(h=>h.city).filter(Boolean))].sort()});
+});
+app.get('/api/public/halls/:id',(req,res)=>{
+ const row=db.prepare("SELECT id,tenant,body FROM records WHERE id=? AND kind='halls'").get(String(req.params.id));
+ const t=row?db.prepare('SELECT id,name,city FROM tenants WHERE id=?').get(row.tenant):null;
+ if(!row||!t)return res.status(404).json({error:'Hall not found.'});
+ const b=JSON.parse(row.body);
+ const pick=kind=>db.prepare('SELECT id,body FROM records WHERE tenant=? AND kind=?').all(row.tenant,kind).map(r=>({...JSON.parse(r.body),id:r.id})).filter(x=>x.status==='Active');
+ res.json({hall:{...b,id:row.id,city:t.city||'',venue:t.name||''},addons:pick('addons'),plans:pick('plans')});
+});
+app.get('/api/public/content',(_req,res)=>res.json([{id:'demo-privacy-0001',kind:'page',slug:'privacy',locale:'en',content:{title:'Privacy notice',summary:'',body:'Demo privacy notice for local enquiry testing.'},published_at:'2026-01-01T00:00:00.000Z',published_revision:1}]));
+app.post('/api/public/enquiries',(req,res)=>{
+ const p=req.body||{};
+ if(typeof p.name!=='string'||p.name.trim().length<2||typeof p.email!=='string'||!p.email.includes('@')||typeof p.message!=='string'||p.message.trim().length<10||p.consent!==true)return res.status(400).json({error:'Check the enquiry details and try again.'});
+ if(p.website)return res.status(201).json({received:true});
+ db.prepare('INSERT INTO public_enquiries(id,name,email,organization,message,locale,created_at) VALUES(?,?,?,?,?,?,?)').run(randomBytes(16).toString('hex'),String(p.name).slice(0,120),String(p.email).slice(0,254),String(p.organization||'').slice(0,120),String(p.message).slice(0,3000),p.locale==='hi'?'hi':'en',Date.now());
+ res.status(201).json({received:true});
+});
 app.use('/api',(req,res,next)=>{const u=db.prepare('SELECT users.* FROM users JOIN sessions ON users.id=sessions.user_id WHERE token=? AND expires>?').get(req.cookies.session||'',Date.now());if(!u)return res.status(401).json({error:'Please sign in to continue.'});const linked=db.prepare('SELECT body FROM records JOIN account_links ON records.id=account_links.record_id WHERE account_links.user_id=?').get(u.id);if(linked&&JSON.parse(linked.body).status==='Inactive')return res.status(403).json({error:'This account is inactive. Contact your workspace owner.'});req.user=u;next();});
 app.get('/api/auth/me',(req,res)=>res.json(publicUser(req.user)));
 const list=(tenant,kind)=>db.prepare('SELECT * FROM records WHERE tenant=? AND kind=?').all(tenant,kind).map(r=>({...JSON.parse(r.body),id:r.id}));

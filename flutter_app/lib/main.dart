@@ -20,5 +20,6 @@ Future<void> main() async {
     session: session,
     workspace: workspace,
     appearance: appearance,
+    prefs: prefs,
   ));
 }

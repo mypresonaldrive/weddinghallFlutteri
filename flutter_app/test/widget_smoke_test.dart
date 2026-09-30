@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gatherhall/src/core/appearance.dart';
+import 'package:gatherhall/src/core/session.dart';
 import 'package:gatherhall/src/core/storage.dart';
+import 'package:gatherhall/src/screens/intro.dart';
 import 'package:gatherhall/src/widgets/common.dart';
 
 AppearanceStore newAppearance() => AppearanceStore(
@@ -93,5 +95,20 @@ void main() {
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
     expect(result, isTrue);
+  });
+
+  testWidgets('intro carousel shows value props and next CTA', (tester) async {
+    final prefs = KeyValueStore(
+        File('${Directory.systemTemp.path}/intro_smoke_state.json'));
+    final session = SessionStore(prefs);
+    await tester.pumpWidget(MaterialApp(
+      home: IntroCarousel(prefs: prefs, session: session, onDone: () {}),
+    ));
+    expect(find.text('Every celebration, one place'), findsOneWidget);
+    expect(find.text('Next'), findsOneWidget);
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    expect(find.text('Transparent packages, live quotes'), findsOneWidget);
+    expect(find.text('Discover halls near you'), findsNothing);
   });
 }

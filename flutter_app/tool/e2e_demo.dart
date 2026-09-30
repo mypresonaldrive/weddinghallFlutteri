@@ -44,6 +44,54 @@ Future<void> main() async {
   }
   ok('demo server reachable at $baseUrl');
 
+  // Public discovery works with no session: halls, detail, policy, enquiry.
+  final publicHalls = await expectApi(
+      () => api.getMap('/api/public/halls'), 'GET /api/public/halls');
+  final publicList = (publicHalls['halls'] as List<dynamic>? ?? <dynamic>[])
+      .whereType<Map<String, dynamic>>()
+      .toList();
+  if (publicList.isEmpty) fail('expected public halls without a session');
+  final publicCities = (publicHalls['cities'] as List<dynamic>? ?? <dynamic>[])
+      .map((dynamic c) => c.toString())
+      .toList();
+  ok('public halls listed without login: ${publicList.length} halls '
+      '(areas: ${publicCities.join(', ')})');
+
+  final detailId = publicList.first['id'];
+  final hallDetail = await expectApi(
+      () => api.getMap('/api/public/halls/$detailId'),
+      'GET /api/public/halls/:id');
+  if (hallDetail['hall'] == null) fail('public hall detail missing');
+  final detailAddons = (hallDetail['addons'] as List<dynamic>? ?? <dynamic>[])
+      .whereType<Map<String, dynamic>>()
+      .length;
+  ok('public hall detail loads ($detailAddons services on offer)');
+
+  final content = await expectApi(
+      () => api.getList('/api/public/content?locale=en'),
+      'GET /api/public/content');
+  final policies = content
+      .whereType<Map<String, dynamic>>()
+      .where((entry) => entry['slug'] == 'privacy')
+      .toList();
+  if (policies.isEmpty) fail('expected published privacy policy in content');
+  ok('privacy policy published for enquiry consent');
+
+  await expectApi(
+      () => api.post('/api/public/enquiries', <String, dynamic>{
+            'name': 'E2E Visitor',
+            'email': 'visitor@example.test',
+            'organization': 'E2E walkthrough',
+            'message': 'Is the ballroom free for a December wedding?',
+            'locale': 'en',
+            'consent': true,
+            'website': '',
+            'policyId': policies.first['id'],
+            'policyRevision': policies.first['published_revision'],
+          }),
+      'POST /api/public/enquiries');
+  ok('hall enquiry submitted without login');
+
   // 2. Wrong password maps to ApiException with HTTP status 401.
   try {
     await api.post('/api/auth/login', {

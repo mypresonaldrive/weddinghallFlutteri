@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'core/appearance.dart';
 import 'core/session.dart';
+import 'core/storage.dart';
 import 'core/store.dart';
 import 'screens/auth.dart';
+import 'screens/intro.dart';
 import 'screens/shell.dart';
 
 class GatherhallApp extends StatelessWidget {
@@ -12,11 +14,13 @@ class GatherhallApp extends StatelessWidget {
     required this.session,
     required this.workspace,
     required this.appearance,
+    required this.prefs,
   });
 
   final SessionStore session;
   final WorkspaceStore workspace;
   final AppearanceStore appearance;
+  final KeyValueStore prefs;
 
   @override
   Widget build(BuildContext context) {
@@ -28,41 +32,66 @@ class GatherhallApp extends StatelessWidget {
         themeMode: appearance.mode,
         theme: appearance.light(),
         darkTheme: appearance.dark(),
-        home: RootGate(session: session, workspace: workspace, appearance: appearance),
+        home: RootGate(
+          session: session,
+          workspace: workspace,
+          appearance: appearance,
+          prefs: prefs,
+        ),
       ),
     );
   }
 }
 
-class RootGate extends StatelessWidget {
+class RootGate extends StatefulWidget {
   const RootGate({
     super.key,
     required this.session,
     required this.workspace,
     required this.appearance,
+    required this.prefs,
   });
 
   final SessionStore session;
   final WorkspaceStore workspace;
   final AppearanceStore appearance;
+  final KeyValueStore prefs;
+
+  @override
+  State<RootGate> createState() => _RootGateState();
+}
+
+class _RootGateState extends State<RootGate> {
+  late bool _introSeen = widget.prefs.get('intro_seen') == true;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge(<Listenable>[session, workspace]),
+      listenable: Listenable.merge(
+          <Listenable>[widget.session, widget.workspace]),
       builder: (context, _) {
-        switch (session.phase) {
+        switch (widget.session.phase) {
           case BootPhase.starting:
             return const SplashScreen();
           case BootPhase.unreachable:
-            return UnreachableScreen(session: session);
+            return UnreachableScreen(session: widget.session);
           case BootPhase.signedOut:
-            return AuthScreen(session: session, workspace: workspace);
+            if (!_introSeen) {
+              return IntroCarousel(
+                prefs: widget.prefs,
+                session: widget.session,
+                onDone: () => setState(() => _introSeen = true),
+              );
+            }
+            return AuthScreen(
+                session: widget.session, workspace: widget.workspace);
           case BootPhase.needsOnboarding:
-            return OnboardingScreen(session: session);
+            return OnboardingScreen(session: widget.session);
           case BootPhase.workspace:
             return WorkspaceShell(
-                session: session, workspace: workspace, appearance: appearance);
+                session: widget.session,
+                workspace: widget.workspace,
+                appearance: widget.appearance);
         }
       },
     );
