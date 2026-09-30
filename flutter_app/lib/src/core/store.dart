@@ -121,6 +121,21 @@ class WorkspaceStore extends ChangeNotifier {
   }
 
   Future<RecordItem> update(String kind, String id, Map<String, dynamic> body) async {
+    // Optimistic concurrency: stamp the last known version so the server can
+    // reject a stale overwrite. Callers that already include 'version' win.
+    RecordItem? current;
+    for (final r in listFor(kind)) {
+      if (r.id == id) {
+        current = r;
+        break;
+      }
+    }
+    if (body['version'] == null &&
+        current != null &&
+        current.data['version'] != null) {
+      body = Map<String, dynamic>.from(body)
+        ..['version'] = current.data['version'];
+    }
     final json = await _api.put('$_path(kind)/$id', body);
     json['id'] = id;
     final list = List<RecordItem>.from(listFor(kind));
