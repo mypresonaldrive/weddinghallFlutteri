@@ -1,0 +1,72 @@
+00:00 +0: loading /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart
+00:00 +0: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: validDate accepts ISO dates
+00:00 +1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: inr Indian lakh grouping, paisa only when non-zero
+00:00 +2: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: inr Indian lakh grouping, paisa only when non-zero
+00:00 +3: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration full day reserves the whole calendar day (UTC)
+00:00 +4: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: dates formatDate renders d MMM yyyy and em-dash for empties
+00:00 +5: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: dates formatDate renders d MMM yyyy and em-dash for empties
+00:00 +6: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration afternoon and evening overlap; morning and afternoon do not
+00:00 +7: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: dates formatDateShort drops the year
+00:00 +8: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration custom timing spans overnight with end date
+00:00 +9: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration custom timing spans overnight with end date
+00:00 +10: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: dates todayIso is a valid date string
+00:00 +11: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration multiple days counts rental days
+00:00 +12: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: timeLabel 12-hour clock with AM/PM
+00:00 +13: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration rejects end before start and >31 days
+00:00 +14: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: statusColorName covers all booking statuses
+00:00 +15: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingDuration rejects invalid date input
+00:00 +16: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/formatters_test.dart: pluralCount singular vs plural
+00:00 +17: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingsOverlap same evening booking overlaps
+00:00 +18: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingsOverlap morning booking on same day does not overlap evening
+00:00 +19: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: bookingsOverlap next day full booking does not overlap
+00:00 +20: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/duration_test.dart: occupiesDate evening booking occupies its own date and not the next
+00:00 +21: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: CurrentUser parses demo session payloads
+00:00 +22: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: CurrentUser inactive entitlement flags the shell
+00:00 +23: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: CurrentUser missing entitlement defaults to active (demo mode)
+00:00 +24: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: RecordItem field accessors
+00:00 +25: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: RecordItem payload strips server-owned id for full-record PUT
+00:00 +26: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: RecordItem numOf tolerates string numbers from JSON
+00:00 +27: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +28: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +29: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +30: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +31: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +32: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue parses and rounds to two decimals
+00:00 +33: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/models_test.dart: AppConfig fromJson defaults
+00:00 +34: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue rejects missing, NaN and out of range
+00:00 +35: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: numberValue rejects missing, NaN and out of range
+00:00 +36: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking returns null without a plan (manual bookings)
+00:00 +37: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking venue-only charges venue rental for shift rate
+00:00 +38: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking per-plate billing v2: guaranteed + extra plates
+00:00 +39: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking fixed package rejects guest counts above the cap
+00:00 +40: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking fixed package charges package price for in-cap guests
+00:00 +41: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking add-ons sum manual and guest-driven quantities
+00:00 +42: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking duplicate add-ons are rejected
+00:00 +43: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking guest count above capacity is rejected
+00:00 +44: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking inactive plans are not offered
+00:00 +45: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: priceBooking previous quote snapshot is reused for the same plan
+00:00 +46: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: normalizeMenus accepts a valid menu and trims items
+00:00 +47: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: normalizeMenus rejects duplicate plate types and empty sections
+00:00 +48: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/pricing_test.dart: normalizeFeatures trims, drops duplicates and enforces limits
+00:01 +49: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: first GET absorbs Set-Cookie and resends it on later requests
+00:01 +49 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: first GET absorbs Set-Cookie and resends it on later requests [E]
+  Expected: contains 'gh_csrf'
+    Actual: MappedListIterable<Cookie, String>:[]
+     Which: does not contain 'gh_csrf'
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/api_test.dart 82:5                             main.<fn>
+  
+00:01 +49 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: POST attaches x-csrf-token from the cookie jar
+00:01 +50 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: getMap and getList shapes
+00:01 +51 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: error mapping: 404 → ApiException with status; JSON error message
+00:01 +52 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: 402 body from /api/locked maps to ApiException(402)
+00:01 +53 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: server unreachable maps to friendly ApiException
+00:01 +54 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/widget_smoke_test.dart: light theme renders the shared widgets
+00:01 +55 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/widget_smoke_test.dart: dark theme renders without exceptions
+00:02 +56 -1: /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/widget_smoke_test.dart: confirm dialog returns the chosen value
+00:02 +57 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/weddinghallFlutteri/weddinghallFlutteri/flutter_app/test/api_test.dart: first GET absorbs Set-Cookie and resends it on later requests
