@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/api.dart';
+
 import '../core/formatters.dart';
 import '../core/models.dart';
 import '../core/session.dart';
@@ -230,7 +232,7 @@ class _HallsScreenState extends State<HallsScreen> {
     var saving = false;
 
     final saved = await showAppDialog<bool>(context, builder: (ctx) {
-      return StatefulBuilder(builder: (setLocal) {
+      return StatefulBuilder(builder: (_, setLocal) {
         return Padding(
           padding: const EdgeInsets.all(20),
           child: Form(

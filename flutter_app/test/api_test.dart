@@ -11,22 +11,19 @@ void main() {
   late String baseUrl;
   List<Cookie> receivedCookies = <Cookie>[];
   Map<String, String> lastHeaders = <String, String>{};
-  String? lastPath;
   dynamic lastBody;
 
   setUp(() async {
     receivedCookies = <Cookie>[];
     lastHeaders = <String, String>{};
-    lastPath = null;
     lastBody = null;
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     baseUrl = 'http://127.0.0.1:${server.port}';
     server.listen((request) async {
-      lastPath = request.uri.path;
-      lastHeaders = <String, String>{
-        for (final name in request.headers.names)
-          name.toLowerCase(): request.headers.value(name) ?? '',
-      };
+      lastHeaders = <String, String>{};
+      request.headers.forEach((name, values) {
+        lastHeaders[name.toLowerCase()] = values.join(', ');
+      });
       final raw = await utf8.decoder.bind(request).join();
       lastBody = raw.isEmpty ? null : jsonDecode(raw);
 
@@ -106,7 +103,7 @@ void main() {
   test('error mapping: 404 → ApiException with status; JSON error message', () async {
     final client = newClient();
     await expectLater(
-      client.get('/api/missing'),
+      client.getMap('/api/missing'),
       throwsA(isA<ApiException>()
           .having((e) => e.status, 'status', 404)
           .having((e) => e.message, 'message', 'Resource not found.')),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../core/duration.dart';
+
+import '../core/api.dart';
+
 import '../core/constants.dart';
 import '../core/formatters.dart';
 import '../core/models.dart';
@@ -429,7 +433,7 @@ class _PlanEditorState extends State<PlanEditor> {
             Row(
               children: [
                 Expanded(
-                  child: StatefulBuilder(builder: (setLocal) {
+                  child: StatefulBuilder(builder: (_, setLocal) {
                     return DropdownButtonFormField<String>(
                       initialValue: _mode,
                       decoration: inputDecoration('Billing method *'),
@@ -443,7 +447,7 @@ class _PlanEditorState extends State<PlanEditor> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: StatefulBuilder(builder: (setLocal) {
+                  child: StatefulBuilder(builder: (_, setLocal) {
                     return DropdownButtonFormField<String>(
                       initialValue: _status,
                       decoration: inputDecoration('Status *'),
@@ -861,14 +865,14 @@ class _PlanEditorState extends State<PlanEditor> {
     };
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(builder: (setLocal) {
+      builder: (ctx) => StatefulBuilder(builder: (_, setLocal) {
         return AlertDialog(
           title: Text(index >= 0 ? 'Edit rate rule' : 'Add rate rule'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                StatefulBuilder(builder: (setLocal2) {
+                StatefulBuilder(builder: (_, setLocal2) {
                   return DropdownButtonFormField<String>(
                     initialValue: eventType,
                     decoration: inputDecoration('Event type'),
@@ -1070,7 +1074,7 @@ class _AddonEditorState extends State<AddonEditor> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: StatefulBuilder(builder: (setLocal) {
+                  child: StatefulBuilder(builder: (_, setLocal) {
                     return DropdownButtonFormField<String>(
                       initialValue: _unit,
                       decoration: inputDecoration('Billing unit *'),
@@ -1088,7 +1092,7 @@ class _AddonEditorState extends State<AddonEditor> {
             Row(
               children: [
                 Expanded(
-                  child: StatefulBuilder(builder: (setLocal) {
+                  child: StatefulBuilder(builder: (_, setLocal) {
                     return DropdownButtonFormField<String>(
                       initialValue: _category,
                       decoration: inputDecoration('Category *'),
@@ -1103,7 +1107,7 @@ class _AddonEditorState extends State<AddonEditor> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: StatefulBuilder(builder: (setLocal) {
+                  child: StatefulBuilder(builder: (_, setLocal) {
                     return DropdownButtonFormField<String>(
                       initialValue: _status,
                       decoration: inputDecoration('Status *'),

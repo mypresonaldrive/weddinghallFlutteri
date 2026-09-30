@@ -233,7 +233,7 @@ class _MfaVerifyScreenState extends State<MfaVerifyScreen> {
                         const Text(
                             'No authenticator enrolled. Set one up from Settings → Security.'),
                       if (_factors.isNotEmpty) ...[
-                        StatefulBuilder(builder: (setLocal) {
+                        StatefulBuilder(builder: (_, setLocal) {
                           return DropdownButtonFormField<String>(
                             initialValue: _factorId,
                             decoration: inputDecoration('Authenticator'),
@@ -744,7 +744,7 @@ class _PlansTabState extends State<PlansTab> {
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(builder: (setLocal) {
+      builder: (ctx) => StatefulBuilder(builder: (_, setLocal) {
         return AlertDialog(
           title: Text(plan == null ? 'Add plan' : 'Edit plan'),
           content: SingleChildScrollView(
@@ -1374,7 +1374,7 @@ class _IntegrationsTabState extends State<IntegrationsTab> {
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(builder: (setLocal) {
+      builder: (ctx) => StatefulBuilder(builder: (_, setLocal) {
         return AlertDialog(
           title: Text(_labels[kind] ?? kind),
           content: SingleChildScrollView(

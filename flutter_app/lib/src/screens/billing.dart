@@ -106,9 +106,6 @@ class _BillingScreenState extends State<BillingScreen> {
       );
     }
     final data = _billing ?? <String, dynamic>{};
-    final organization = data['organization'] is Map
-        ? Map<String, dynamic>.from(data['organization'] as Map)
-        : <String, dynamic>{};
     final subscription = data['subscription'] is Map
         ? Map<String, dynamic>.from(data['subscription'] as Map)
         : <String, dynamic>{};

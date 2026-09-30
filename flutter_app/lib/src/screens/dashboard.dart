@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/duration.dart';
+
 import '../core/formatters.dart';
 import '../core/models.dart';
 import '../core/session.dart';
@@ -23,7 +25,7 @@ class DashboardScreen extends StatelessWidget {
     final activeBookings =
         bookings.where((b) => b.str('status') != 'Cancelled').toList();
     final upcoming = activeBookings
-        .where((b) => (b.str('date') >= today) && b.str('status') != 'Completed')
+        .where((b) => b.str('date').compareTo(today) >= 0 && b.str('status') != 'Completed')
         .toList()
       ..sort((a, b) => a.str('date').compareTo(b.str('date')));
     final pending = bookings.where((b) => b.str('status') == 'Pending').toList();
@@ -31,7 +33,6 @@ class DashboardScreen extends StatelessWidget {
     final monthRevenue = payments
         .where((p) => p.str('date').startsWith(thisMonth))
         .fold<double>(0, (sum, p) => sum + p.numOf('amount').toDouble());
-    final totalPaid = payments.fold<double>(0, (sum, p) => sum + p.numOf('amount').toDouble());
     final outstanding = activeBookings.fold<double>(
         0, (sum, b) => sum + (b.numOf('total') - paidFor(payments, b.id)).toDouble());
     final activeClients =
@@ -66,7 +67,7 @@ class DashboardScreen extends StatelessWidget {
                 child: StatTile(
                   label: 'Upcoming bookings',
                   value: '${upcoming.length}',
-                  icon: Icons.event_upcoming_outlined,
+                  icon: Icons.event_upcoming,
                   caption: upcoming.isEmpty
                       ? 'Nothing scheduled'
                       : 'Next: ${formatDate(upcoming.first.str('date'))}',

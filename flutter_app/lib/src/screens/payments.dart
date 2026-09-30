@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/api.dart';
+
 import '../core/formatters.dart';
 import '../core/models.dart';
 import '../core/session.dart';
@@ -248,7 +250,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     }
 
     final saved = await showAppDialog<bool>(context, builder: (ctx) {
-      return StatefulBuilder(builder: (setLocal) {
+      return StatefulBuilder(builder: (_, setLocal) {
         final remaining = remainingFor(bookingId);
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -263,7 +265,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         .titleLarge
                         ?.copyWith(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 16),
-                StatefulBuilder(builder: (setBooking) {
+                StatefulBuilder(builder: (_, setBooking) {
                   final items = <DropdownMenuItem<String>>[
                     for (final b in bookings)
                       DropdownMenuItem(

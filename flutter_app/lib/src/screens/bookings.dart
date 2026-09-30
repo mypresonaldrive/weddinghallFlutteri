@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/api.dart';
+
 import '../core/duration.dart' as dur;
 import '../core/formatters.dart';
 import '../core/models.dart';
@@ -34,8 +36,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
     var items = widget.workspace.bookings.where((b) {
       if (_status != 'All' && b.str('status') != _status) return false;
       if (_hallId != 'All' && b.str('hallId') != _hallId) return false;
-      if (_from != null && b.str('date') < _iso(_from!)) return false;
-      if (_to != null && b.str('date') > _iso(_to!)) return false;
+      if (_from != null && b.str('date').compareTo(_iso(_from!)) < 0) return false;
+      if (_to != null && b.str('date').compareTo(_iso(_to!)) > 0) return false;
       if (query.isEmpty) return true;
       return b.str('name').toLowerCase().contains(query) ||
           b.str('client').toLowerCase().contains(query) ||
@@ -59,8 +61,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
       default:
         items.sort((a, b) {
           final today = todayIso();
-          final aUp = a.str('date') >= today && a.str('status') != 'Cancelled';
-          final bUp = b.str('date') >= today && b.str('status') != 'Cancelled';
+          final aUp = a.str('date').compareTo(today) >= 0 && a.str('status') != 'Cancelled';
+          final bUp = b.str('date').compareTo(today) >= 0 && b.str('status') != 'Cancelled';
           if (aUp != bUp) return aUp ? -1 : 1;
           return a.str('date').compareTo(b.str('date'));
         });
@@ -637,25 +639,25 @@ class BookingDetailScreen extends StatelessWidget {
       final tax = (quote['taxAmount'] as num?) ?? 0;
       final taxRate = (quote['taxRate'] as num?) ?? 0;
       final advance = (quote['advanceAmount'] as num?) ?? 0;
-      if ((venue as num).toDouble() > 0) {
+      if (venue.toDouble() > 0) {
         lines.add(_line(context, 'Venue rental', inr(venue)));
       }
-      if ((catering as num).toDouble() > 0) {
+      if (catering.toDouble() > 0) {
         lines.add(_line(context, 'Catering', inr(catering)));
       }
-      if ((package as num).toDouble() > 0) {
+      if (package.toDouble() > 0) {
         lines.add(_line(context, 'Package', inr(package)));
       }
-      if ((addons as num).toDouble() > 0) {
+      if (addons.toDouble() > 0) {
         lines.add(_line(context, 'Add-on services', inr(addons)));
       }
       final subtotal = (quote['subtotal'] as num?) ?? 0;
       lines.add(const Divider());
       lines.add(_line(context, 'Subtotal', inr(subtotal)));
-      if ((discount as num).toDouble() > 0) {
+      if (discount.toDouble() > 0) {
         lines.add(_line(context, 'Discount', '- ${inr(discount)}'));
       }
-      if ((tax as num).toDouble() > 0) {
+      if (tax.toDouble() > 0) {
         lines.add(_line(context, 'Tax (${taxRate}% )'.replaceAll(' )', ')'), inr(tax)));
       }
       final addonLines = quote['addonLines'];
@@ -669,7 +671,7 @@ class BookingDetailScreen extends StatelessWidget {
           }
         }
       }
-      if ((advance as num).toDouble() > 0) {
+      if (advance.toDouble() > 0) {
         lines.add(_line(context, 'Advance due (${quote['advancePercent'] ?? ''}%)',
             inr(advance)));
       }

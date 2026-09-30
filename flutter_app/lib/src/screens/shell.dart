@@ -212,7 +212,7 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
                   ),
               ],
             ),
-            VerticalDivider(width: 1, color: scheme.dividerColor),
+            VerticalDivider(width: 1, color: scheme.outlineVariant),
             Expanded(child: body),
           ],
         ),

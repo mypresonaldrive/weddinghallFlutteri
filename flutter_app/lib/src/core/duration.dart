@@ -102,7 +102,7 @@ BookingWindow bookingDuration(Map<String, dynamic> input) {
   if (option == null) throw ApiExceptionLike('Choose a valid booking duration.');
   final endDateInput =
       (mode == 'multiple' || mode == 'custom') ? (input['endDate'] as String? ?? date) : date;
-  if (!validDate(endDateInput) || endDateInput! < date!) {
+  if (!validDate(endDateInput) || endDateInput!.compareTo(date!) < 0) {
     throw ApiExceptionLike('End date must be on or after the start date.');
   }
   var startTime = option.start ?? '00:00';
@@ -115,8 +115,8 @@ BookingWindow bookingDuration(Map<String, dynamic> input) {
     }
   }
   final effectiveEndDay =
-      (mode == 'full' || mode == 'multiple') ? nextDate(endDateInput!) : endDateInput!;
-  final start = DateTime.parse('${date!}T$startTime:00Z').toUtc();
+      (mode == 'full' || mode == 'multiple') ? nextDate(endDateInput) : endDateInput;
+  final start = DateTime.parse('${date}T$startTime:00Z').toUtc();
   final end = DateTime.parse('${effectiveEndDay}T$endTime:00Z').toUtc();
   if (!end.isAfter(start)) {
     throw ApiExceptionLike(
@@ -140,7 +140,7 @@ BookingWindow bookingDuration(Map<String, dynamic> input) {
   return BookingWindow(
     mode: mode,
     label: option.label,
-    startDate: date!,
+    startDate: date,
     endDate: effectiveEndDay,
     startTime: startTime,
     endTime: endTime,

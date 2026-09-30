@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/api.dart';
+
 import '../core/constants.dart';
 import '../core/duration.dart' as dur;
 import '../core/formatters.dart';
@@ -225,7 +227,7 @@ class _BookingWizardState extends State<BookingWizard> {
           _quoteError = null;
         });
         _applyPlanDefaults();
-      } on ApiExceptionLike catch (e) {
+      } on dur.ApiExceptionLike catch (e) {
         setState(() {
           _quote = null;
           _quoteError = e.message;
@@ -329,7 +331,7 @@ class _BookingWizardState extends State<BookingWizard> {
       }
       if ((_durationMode == 'multiple' || _durationMode == 'custom')) {
         if (!dur.validDate(_endDate)) return 'Choose a valid end date.';
-        if (_endDate < _date) return 'End date must be on or after the start date.';
+        if (_endDate.compareTo(_date) < 0) return 'End date must be on or after the start date.';
       }
       final guests = num.tryParse(_guests.text.trim());
       final hall = _hall();
@@ -339,14 +341,20 @@ class _BookingWizardState extends State<BookingWizard> {
       }
       try {
         dur.bookingDuration(_quoteInput());
-      } on ApiExceptionLike catch (e) {
+      } on dur.ApiExceptionLike catch (e) {
         return e.message;
       }
-      final hallStatus = _availability?.halls.firstWhere(
-        (h) => h.id == _hallId,
-        orElse: () => AvailabilityHall(id: _hallId, available: true, reason: ''),
-      );
-      if (!hallStatus.available && hallStatus.reason.isNotEmpty) {
+      final availability = _availability;
+      final hallStatus = availability == null
+          ? null
+          : availability.halls.firstWhere(
+              (h) => h.id == _hallId,
+              orElse: () =>
+                  AvailabilityHall(id: _hallId, available: true, reason: ''),
+            );
+      if (hallStatus != null &&
+          !hallStatus.available &&
+          hallStatus.reason.isNotEmpty) {
         return '${hallStatus.reason}. Choose another hall or time.';
       }
       return null;
@@ -733,7 +741,7 @@ class _BookingWizardState extends State<BookingWizard> {
             const SizedBox(height: 12),
             LayoutBuilder(builder: (context, constraints) {
               final half = constraints.maxWidth > 520;
-              final clientField = StatefulBuilder(builder: (setLocal) {
+              final clientField = StatefulBuilder(builder: (_, setLocal) {
                 return DropdownButtonFormField<String>(
                   initialValue: _clientId.isEmpty ? null : _clientId,
                   decoration: inputDecoration('Client *', prefixIcon: Icons.person_outline),
@@ -749,7 +757,7 @@ class _BookingWizardState extends State<BookingWizard> {
                   },
                 );
               });
-              final hallField = StatefulBuilder(builder: (setLocal) {
+              final hallField = StatefulBuilder(builder: (_, setLocal) {
                 return DropdownButtonFormField<String>(
                   initialValue: _hallId.isEmpty ? null : _hallId,
                   decoration: inputDecoration('Hall *', prefixIcon: Icons.warehouse_outlined),
@@ -788,7 +796,7 @@ class _BookingWizardState extends State<BookingWizard> {
             const SizedBox(height: 12),
             LayoutBuilder(builder: (context, constraints) {
               final half = constraints.maxWidth > 520;
-              final typeField = StatefulBuilder(builder: (setLocal) {
+              final typeField = StatefulBuilder(builder: (_, setLocal) {
                 return DropdownButtonFormField<String>(
                   initialValue: _eventType,
                   decoration: inputDecoration('Event type *'),
@@ -832,12 +840,12 @@ class _BookingWizardState extends State<BookingWizard> {
                     .labelLarge
                     ?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
-            StatefulBuilder(builder: (setLocal) {
+            StatefulBuilder(builder: (_, setLocal) {
               return DropdownButtonFormField<String>(
                 initialValue: _durationMode,
                 decoration: inputDecoration('Booking duration *'),
                 items: [
-                  for (final option in durationOptions)
+                  for (final option in dur.durationOptions)
                     DropdownMenuItem(
                         value: option.value,
                         child: Text('${option.label} · ${option.hint}')),
@@ -988,7 +996,7 @@ class _BookingWizardState extends State<BookingWizard> {
               Row(
                 children: [
                   Expanded(
-                    child: StatefulBuilder(builder: (setLocal) {
+                    child: StatefulBuilder(builder: (_, setLocal) {
                       return DropdownButtonFormField<String>(
                         initialValue: _status,
                         decoration: inputDecoration('Status'),
@@ -1133,7 +1141,7 @@ class _BookingWizardState extends State<BookingWizard> {
                           ?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 12),
                   if (plan.str('mode') == 'plate' || plan.str('mode') == 'combined') ...[
-                    StatefulBuilder(builder: (setLocal) {
+                    StatefulBuilder(builder: (_, setLocal) {
                       final menus = plan.listOf('menus').whereType<Map>().toList();
                       final offered = menus.isNotEmpty
                           ? menus.map((m) => (m['plateType'] ?? '').toString()).toList()
@@ -1202,7 +1210,7 @@ class _BookingWizardState extends State<BookingWizard> {
                   ],
                   if (plan.str('mode') == 'fixed' &&
                       plan.listOf('menus').isNotEmpty) ...[
-                    StatefulBuilder(builder: (setLocal) {
+                    StatefulBuilder(builder: (_, setLocal) {
                       final menus = plan.listOf('menus').whereType<Map>().toList();
                       final offered = menus
                           .map((m) => (m['plateType'] ?? '').toString())
