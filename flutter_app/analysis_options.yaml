@@ -1,0 +1,10 @@
+analyzer:
+  exclude:
+    - build/**
+    - .dart_tool/**
+linter:
+  rules:
+    - avoid_print
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - use_super_parameters

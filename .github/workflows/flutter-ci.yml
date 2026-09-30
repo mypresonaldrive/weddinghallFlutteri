@@ -1,0 +1,152 @@
+name: Flutter app
+
+on:
+  push:
+    branches:
+      - arena/01a0f024-weddinghallflutteri
+    paths:
+      - 'flutter_app/**'
+      - '.github/workflows/flutter-ci.yml'
+  pull_request:
+    paths:
+      - 'flutter_app/**'
+      - '.github/workflows/flutter-ci.yml'
+  workflow_dispatch:
+    inputs:
+      build_ios:
+        description: 'Also build iOS (no codesign)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: flutter-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-test:
+    name: Analyze + unit/widget tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Flutter version
+        run: flutter --version
+      - name: Pub get
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+      - name: Test
+        run: flutter test --reporter expanded
+
+  e2e-demo:
+    name: E2E against demo server
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: analyze-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install server dependencies
+        run: npm ci
+      - name: Dart deps for e2e tool
+        working-directory: flutter_app
+        run: flutter pub get
+      - name: Start demo server
+        run: |
+          node server.js > /tmp/demo-server.log 2>&1 &
+          echo $! > /tmp/demo-server.pid
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/api/config >/dev/null 2>&1; then
+              echo "demo server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "demo server failed to start"
+          cat /tmp/demo-server.log
+          exit 1
+      - name: Run Flutter e2e
+        working-directory: flutter_app
+        run: dart run tool/e2e_demo.dart
+      - name: Stop demo server
+        if: always()
+        run: |
+          if [ -f /tmp/demo-server.pid ]; then kill "$(cat /tmp/demo-server.pid)" || true; fi
+          cat /tmp/demo-server.log || true
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: analyze-test
+    if: ${{ hashFiles('flutter_app/android/build.gradle') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Pub get
+        working-directory: flutter_app
+        run: flutter pub get
+      - name: Build APK (release, debug-signed)
+        working-directory: flutter_app
+        run: flutter build apk --release
+      - name: Report artifact path
+        run: ls -lh flutter_app/build/app/outputs/flutter-apk/
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    timeout-minutes: 60
+    needs: analyze-test
+    if: ${{ hashFiles('flutter_app/windows/runner/main.cpp') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+      - name: Pub get
+        working-directory: flutter_app
+        run: flutter pub get
+      - name: Build Windows release
+        working-directory: flutter_app
+        run: flutter build windows --release
+      - name: Report artifact path
+        run: Get-ChildItem flutter_app\build\windows\x64\runner\Release
+
+  build-ios:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    needs: analyze-test
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_ios }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Pub get
+        working-directory: flutter_app
+        run: flutter pub get
+      - name: Build iOS
+        working-directory: flutter_app
+        run: flutter build ios --no-codesign --release
