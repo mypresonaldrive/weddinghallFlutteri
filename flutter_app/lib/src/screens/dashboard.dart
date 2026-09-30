@@ -67,7 +67,7 @@ class DashboardScreen extends StatelessWidget {
                 child: StatTile(
                   label: 'Upcoming bookings',
                   value: '${upcoming.length}',
-                  icon: Icons.event_upcoming,
+                  icon: Icons.event,
                   caption: upcoming.isEmpty
                       ? 'Nothing scheduled'
                       : 'Next: ${formatDate(upcoming.first.str('date'))}',

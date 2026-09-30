@@ -501,11 +501,10 @@ class _BookingWizardState extends State<BookingWizard> {
     setState(() => _saving = true);
     try {
       final body = _payload();
-      RecordItem saved;
       if (_isEdit) {
-        saved = await widget.workspace.update('bookings', widget.existing!.id, body);
+        await widget.workspace.update('bookings', widget.existing!.id, body);
       } else {
-        saved = await widget.workspace.create('bookings', body);
+        await widget.workspace.create('bookings', body);
       }
       if (!mounted) return;
       Navigator.of(context).pop(true);
