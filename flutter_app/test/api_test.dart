@@ -29,6 +29,7 @@ void main() {
 
       // Mimic the real server: issue a CSRF cookie on any API hit.
       request.response.cookies.add(Cookie('gh_csrf', 'c' * 48));
+      receivedCookies.addAll(request.response.cookies);
       final needsCsrf = request.method == 'POST' || request.method == 'PUT';
       final csrfOk = !needsCsrf ||
           request.headers.value('x-csrf-token') == ('c' * 48);
